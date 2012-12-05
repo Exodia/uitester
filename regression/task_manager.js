@@ -118,7 +118,7 @@ exports.TaskManager = {
 
         /*浏览器空闲事件，触发task事件，同时丢入一个task*/
         'browserFree':function (type) {
-            var tasks = this.browserCache[browser.type];
+            var tasks = this.browserCache[type];
             if (tasks && tasks.length) {
                 this.emit('task', tasks.pop());
             }
@@ -152,8 +152,16 @@ exports.BrowserManager = {
     getTypes:function () {
         return ['ie', 'ff', 'chrome', 'opera'];
     },
-    browserCache:{
+    browserFreePool:{
+          ie:[],
+          ff:[],
+          chrome:[]
 
+    },
+    browserBusyPool: {
+        ie:[],
+        ff:[],
+        chrome:[]
     },
     _eventsMap:{
         'dataUpdated':function () {
