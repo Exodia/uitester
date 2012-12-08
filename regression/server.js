@@ -26,17 +26,16 @@ TaskManager.init();
  Client.prototype.runTask = function(task) {
      this.socket.emit('console:task', task);
      this.task = task;
-     EventManager.emit('client:busy', this.id);
- }
+     EventManager.emit('console:busy', this);
+ };
 
 
 io.sockets.on('connection', function (socket) {
-
     // wrapper object
     var clientObject = new Client(socket);
 
     socket.on('disconnect', function (){
-        EventManager.emit('client:disconnect', clientObject);
+        EventManager.emit('console:disconnect', clientObject);
     });
 
     // Register client after Socket.IO connected
@@ -44,7 +43,7 @@ io.sockets.on('connection', function (socket) {
         //1、设置浏览器类型
         clientObject.userAgent = userAgent.parse(data.userAgent);
         //2、触发注册事件
-        EventManager.emit('client:register', clientObject);
+        EventManager.emit('console:register', clientObject);
     });
 
     // Client task finished, report send back
@@ -53,10 +52,7 @@ io.sockets.on('connection', function (socket) {
         //1、置入报告数据
         clientObject.task.reportData = data.reportData;
         //2、触发任务结束事件
-        EventManager.emit('client:task_finish', clientObject.task);
-        //3、撤销任务
-        clientObject.task = null;
-        //4、触发浏览器空闲事件
-        EventManager.emit('client:available', clientObject);
+        EventManager.emit('console:task_finish', clientObject);
+
     });
 });
