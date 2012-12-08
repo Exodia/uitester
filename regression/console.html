@@ -1,0 +1,46 @@
+<!DOCTYPE HTML>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>UITester Console</title>
+</head>
+<body>
+
+<script src="socket.io.min.js"></script>
+<script>
+    if (!window.console) {
+        window.console = {
+            log:function () {
+            },
+            info:function () {
+            },
+            debug:function () {
+            }
+        }
+    }
+
+    var SERVER = 'http://127.0.0.1:8080';
+    var socket = io.connect(SERVER);
+
+    var runScript = function(script) {
+        var result = new Function(script)();
+        socket.emit('console:task_finish', {reportData: result});
+    };
+
+    var sendAgent = function() {
+        socket.emit('console:register', {
+            'userAgent':window.navigator.userAgent
+        });
+    };
+    socket.on('connect',sendAgent);
+
+    socket.on('console:task', function(task) {
+         socket.emit('console:task_start');
+         console.log(task);
+         runScript(task.script);
+    });
+
+</script>
+
+</body>
+</html>
