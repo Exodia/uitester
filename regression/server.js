@@ -26,6 +26,7 @@ TaskManager.init();
  Client.prototype.runTask = function(task) {
      this.socket.emit('console:task', task);
      this.task = task;
+     console.info('run task', task.id);
      EventManager.emit('console:busy', this);
  };
 
@@ -48,7 +49,6 @@ io.sockets.on('connection', function (socket) {
 
     // Client task finished, report send back
     socket.on('console:task_finish', function (data){
-        console.log('console:task_finish', clientObject.id);
         //1、置入报告数据
         clientObject.task.reportData = data.reportData;
         //2、触发任务结束事件
